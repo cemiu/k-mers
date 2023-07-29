@@ -38,7 +38,7 @@ By default, only Swiss-Prot is used. To also use TrEMBL, uncomment line 11 in `r
 
 To run the script, execute:
 ```
-./prepare.sh
+./run.sh
 ```
 
 This will
