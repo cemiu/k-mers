@@ -136,7 +136,7 @@ dyno_4_networks.py
 .DS_Store
 */inputf.txt
 */outputf.txt
-bin/*
+# bin/*
 kmers.txt
 
 
