@@ -32,7 +32,7 @@ Optionally, `uniprot_trembl.fasta.gz` can be used, to match more PDBs (250 GB af
 The latter might result in (slightly) more PDBs which can be associated to a Protein. The difference is expected to be trivial.
 
 Place the files in the `uniprotkb` folder without uncompressing them.
-By default, only Swiss-Prot is used. To also use TrEMBL, uncomment line 11 in `prepare.sh`.
+By default, only Swiss-Prot is used. To also use TrEMBL, uncomment line 11 in `run.sh`.
 
 ### Running
 

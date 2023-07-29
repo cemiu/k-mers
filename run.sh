@@ -3,6 +3,8 @@
 mdir=$(dirname $(realpath "$0"))
 cd "$mdir"
 
+mkdir "$mkdir/bin"
+
 # List of uniprot files.
 # SwissProt only: 92 MB .gz file to 250 MB database
 files=("uniprotkb/uniprot_sprot.fasta.gz")
