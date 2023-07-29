@@ -21,7 +21,7 @@ Instructions for downloading can be found here:
 https://www.rcsb.org/docs/programmatic-access/file-download-services
 https://files.wwpdb.org/pub/pdb/data/structures/divided/pdb/
 
-Alternatively an outdated mirror or some can be found here: https://pycom.brunel.ac.uk/misc/pdb_2023-07-28.tar (42 GB)
+Alternatively a mirror can be found here: https://pycom.brunel.ac.uk/misc/pdb_2023-07-28.tar (42 GB)
 
 Once downloaded they have to be placed in the `pdb` folder **without** being uncompressed. It does not matter whether they are in `pdb/file.ent.gz` or `pdb/<folder>/file.ent.gz`.
 
