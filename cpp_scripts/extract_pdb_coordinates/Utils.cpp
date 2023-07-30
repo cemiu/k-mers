@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Constants.h"
+#include "PDBContext.h"
 
 std::string concatenateString(const std::vector<std::string>& strings) {
     const char delim = ',';
@@ -56,11 +57,11 @@ float extractResolution(const std::string &line) {
 /// PROCESS ENTRY ///
 /////////////////////
 
-PDBType processHeader(const std::string &line) {
+PDBType processHeader(const std::string &line, PDBContext &con) {
     std::string cls = line.substr(10, 40); // 11-50
     std::string pdbId = line.substr(62, 4); // 63-66
 
-    std::cout << "pdb_id:  " << pdbId << std::endl;
+    con.pdbId = pdbId;
  
     if (cls.find("DNA") != std::string::npos) {
         if (cls.find("DNA BINDING PROTEIN") == std::string::npos)
@@ -75,20 +76,20 @@ PDBType processHeader(const std::string &line) {
 }
 
 // Remark row
-void processRemark(const std::string &line, float &resolution) {
+void processRemark(const std::string &line, PDBContext &con) {
     int remark_no = std::stoi(line.substr(7, 3));
     switch (remark_no) {
         case 2:
             int extractedRes = extractResolution(line);
             if (extractedRes != -1) {
-                resolution = extractResolution(line);
+                con.resolution = extractResolution(line);
             }
             break;
     }
 }
 
 // DBRef row
-void processDBRef(const std::string &line, std::unordered_set<std::string> &uniprotIds) {
+void processDBRef(const std::string &line, PDBContext &con) {
     std::string db = line.substr(26, 6); // 27 - 32
     if (db != "UNP   ") // only match uniprot
         return;
@@ -96,10 +97,10 @@ void processDBRef(const std::string &line, std::unordered_set<std::string> &unip
     std::string uniprotId = line.substr(33, 8); // 34 - 41
     std::stringstream parser(uniprotId);
     parser >> uniprotId;
-    uniprotIds.insert(uniprotId);
+    con.uniprotIds.insert(uniprotId);
 }
 
-void processDBRef1(const std::string &line, std::unordered_set<std::string> &uniprotIds) {
+void processDBRef1(const std::string &line, PDBContext &con) {
     // process 1 for uniprot
     std::string db = line.substr(26, 6); // 27 - 32
     if (db != "UNP   ") // only match uniprot
@@ -112,24 +113,21 @@ void processDBRef1(const std::string &line, std::unordered_set<std::string> &uni
     std::string uniprotId = nextLine.substr(18, 22); // 19 - 40
     std::stringstream parser(uniprotId);
     parser >> uniprotId;
-    uniprotIds.insert(uniprotId);
+    con.uniprotIds.insert(uniprotId);
 }
 
 // SEQRES row
-void processSequence(const std::string &line, std::unordered_map<char, std::stringstream> &sequenceStreams) {
+void processSequence(const std::string &line, PDBContext &con) {
     char chainId = line[11];
     std::string aa;
     std::string aaLine = line.substr(19, 51);
     std::stringstream aaStream(aaLine);
     while (aaStream >> aa) {
         try {
-            sequenceStreams[chainId] << aminoAcidLookup.at(aa);
+            con.sequenceStreams[chainId] << aminoAcidLookup.at(aa);
         } catch (std::out_of_range) {
             // replace non-standard AA with dot (.)
-            sequenceStreams[chainId] << '.';
-
-            // sequenceStreams.erase(chainId);
-            // throw std::out_of_range("test");
+            con.sequenceStreams[chainId] << '.';
             return;
         }
     }

@@ -1,3 +1,4 @@
+success: 1
 pdb_id:  2SPC
 resolut: 1.8
 uniprot: P13395

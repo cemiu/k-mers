@@ -67,15 +67,20 @@ if [[ "$process_option" == "Process PDBs matching UniProt" ]]; then
 fi
 
 k=12
-while : ; do
+while true; do
     read -p "Enter k-mer length (default is 12): " input_k
-    if [[ -z "$input_k" ]] || ( [[ ! "$input_k" =~ ^[0-9]+$ ]] || [[ "$input_k" -le 100 ]] ); then
-        echo "Invalid input. Please enter a valid integer greater than 100 or press enter to use the default value."
-    else
+    if [[ -z "$input_k" ]]; then
+        break
+    elif [[ "$input_k" =~ ^[0-9]+$ ]] && [[ "$input_k" -ge 1 ]] && [[ "$input_k" -le 100 ]]; then
         k="$input_k"
         break
+    else
+        echo "Invalid input. Please enter a valid integer <= 100."
     fi
 done
+
+echo $k
+
 
 echo "Generating k-mers from PDBs."
 

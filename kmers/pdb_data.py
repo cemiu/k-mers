@@ -3,6 +3,7 @@
 PDBData takes a byte stream (produces by extract_pdb_coordinates) and parses it into a PDBData object.
 
 The format of the byte stream is as follows:
+    0. Zeroth line is success: 'success: {0/1}' (int)
     1. First line is resolution:
         'resolut: {resolution}' (float)
     2. Second line is uniprot_id. Can be comma separated if multiple uniprot_ids are found:
@@ -22,6 +23,7 @@ The format of the byte stream is as follows:
 class PDBData:
     """Takes in a byte stream"""
     def __init__(self, pdb_byte_stream):
+        self._success = None
         self._pdb_id = None
         self._resolution = None
         self._parsed_sequence = None
@@ -38,25 +40,30 @@ class PDBData:
     def _parse(self, pdb_byte_stream):
         lines = pdb_byte_stream.decode('utf-8').split("\n")
 
+        # Parse success
+        self._success = bool(int(lines[0].split(': ')[1]))
+        if not self._success:  # do not parse invalid files
+            return
+
         # Parse pdb id
-        self._pdb_id = lines[0].split(':  ')[1]
+        self._pdb_id = lines[1].split(':  ')[1]
 
         # Parse the resolution
-        self._resolution = float(lines[1].split(': ')[1])
+        self._resolution = float(lines[2].split(': ')[1])
 
         # Parse the uniprot ids
-        self._input_uniprot_ids = lines[2].split(': ')[1].split(',')
+        self._input_uniprot_ids = lines[3].split(': ')[1].split(',')
 
         # Parse the matched sequence
-        self._input_matched_sequence = lines[3].split(': ')[1]
+        self._input_matched_sequence = lines[4].split(': ')[1]
         # if self._input_matched_sequence == 'N/A':
         #     print('N/A')
 
         # Parse the parsed sequence
-        self._parsed_sequence = lines[4].split(':  ')[1]
+        self._parsed_sequence = lines[5].split(':  ')[1]
 
         # Parse the other sequences
-        idx = 5
+        idx = 6
         while lines[idx].startswith('other:   '):
             self._input_other_sequences.append(lines[idx].split(': ')[1])
             idx += 1
@@ -73,6 +80,10 @@ class PDBData:
             self._residue_list.append(residue_name)
             self._coordinates.append((x, y, z))
             idx += 1
+
+    @property
+    def success(self):
+        return self._success
 
     @property
     def pdb_id(self):

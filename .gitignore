@@ -93,10 +93,13 @@ ENV/
 
 .idea/
 .DS_Store
-*/inputf.txt
-*/outputf.txt
+inputf.txt
+outputf.txt
 bin/
 kmers.txt
-pdb/**.ent.gz
+pdb/*.ent.gz
+pdb/*/*.ent.gz
+uniprotkb/**.fasta.gz
+
 
 .vscode/*
