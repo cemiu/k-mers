@@ -14,10 +14,10 @@ struct AtomData
     AtomData(const std::string& str, size_t offset = 0)
     {
         std::string atom_name = str.substr(-offset + 12, 4);
-        std::stringstream atom_ss(atom_name);
-        atom_ss >> atom_name;
     
-        isValidAtom = atom_name == "CA"; // whether the atom is ca
+        isValidAtom = atom_name == " CA "; // whether the atom is ca
+        if (!isValidAtom)
+            return;
 
         resName = str.substr(-offset + 17, 3);
         resSeq = std::stoi(str.substr(-offset + 22, 4));
