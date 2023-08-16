@@ -30,6 +30,7 @@ select process_option in "${options[@]}"; do [[ "$process_option" ]] && break; d
 [ "$process_option" == "Exit" ] && { echo "Exiting."; exit 0; }
 
 uniprot_files=("uniprotkb/uniprot_sprot.fasta.gz" "uniprotkb/uniprot_trembl.fasta.gz")
+dbfile="$mdir/uniprotkb/uniprot_sequences.db"
 
 if [[ "$process_option" == "Process PDBs matching UniProt" ]]; then
     if [[ ! -f "$dbfile" ]]; then
@@ -42,10 +43,7 @@ if [[ "$process_option" == "Process PDBs matching UniProt" ]]; then
             fi
         done
         if (( found_files == 0 )); then
-            echo "Uniprot files are missing. These are necessary to match PDBs with UniProt."
-            echo "You can download the required files from https://www.uniprot.org/downloads and place them in the 'uniprotkb' directory."
-            echo "The required files are uniprot_sprot.fasta.gz (SwissProt only), which expands from a 92 MB .gz file to a 250 MB database,"
-            echo "or both uniprot_sprot.fasta.gz and uniprot_trembl.fasta.gz (SwissProt+TrEMBL), which expand from 62 GB .gz files to a ~191 GB database."
+            echo "No Uniprot files found. Download from https://www.uniprot.org/downloads and place in 'uniprotkb' directory. Required: uniprot_sprot.fasta.gz (350MB uncompressed); Optional: uniprot_sprot.fasta.gz + uniprot_trembl.fasta.gz (250GB uncompressed)."
             exit 1
         else
             echo "Creating database."
@@ -54,8 +52,8 @@ if [[ "$process_option" == "Process PDBs matching UniProt" ]]; then
             # Only process the files found
             for filepath in "${uniprot_files[@]}"; do
                 if [[ -f "$mdir/$filepath" ]]; then
-                    # logic for creating database here...
                     echo "Processing $filepath..."
+                    gunzip -c "$mdir/$filepath" | ./bin/fasta_to_sqlite
                 fi
             done
 
